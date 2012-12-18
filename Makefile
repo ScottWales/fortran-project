@@ -24,19 +24,18 @@ FFLAGS+=-module include
 CFLAGS+=-Wall -Werror
 CFLAGS+=-MMD -MP
 
-ALL_SRC:=$(shell find src -type f)
-BIN_SRC:=$(shell find src/bin -type f)
-TEST_SRC:=$(shell find src/test -type f)
+ALL_SRC:=$(shell find src -type f 2> /dev/null)
+BIN_SRC:=$(shell find src/bin -type f 2> /dev/null)
+TEST_SRC:=$(shell find src/test -type f 2> /dev/null)
 
 BIN:=$(patsubst src/bin/%,bin/%,$(basename $(BIN_SRC)))
 TEST:=$(patsubst src/test/%,test/%,$(basename $(TEST_SRC)))
-LIBS:=$(patsubst src/lib/%,lib/lib%.a,$(shell find src/lib -mindepth 1 -maxdepth 1 -type d))
+LIBS:=$(patsubst src/lib/%,lib/lib%.a,$(shell find src/lib -mindepth 1 -maxdepth 1 -type d 2> /dev/null))
 
 F90_SRC=$(filter %.f90, $(ALL_SRC))
 C_SRC=$(filter %.c, $(ALL_SRC))
 
 all:$(BIN) $(TEST)
-	echo $(LIBS)
 check:$(TEST)
 	failed=0;for test in $^; do ./$$test || failed=$$(($$failed+1)); done;\
 	    if [ $$failed -gt 0 ]; then echo "$$failed tests failed"; exit 1; fi
