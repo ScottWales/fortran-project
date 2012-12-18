@@ -17,8 +17,12 @@ all:
 
 LD=$(FC)
 MKDIR=mkdir -p
-FFLAGS+=-warn all
+
+FFLAGS+=-warn all -warn errors
 FFLAGS+=-module include
+
+CFLAGS+=-Wall -Werror
+CFLAGS+=-MMD -MP
 
 ALL_SRC:=$(shell find src -type f)
 BIN_SRC:=$(shell find src/bin -type f)
@@ -29,6 +33,7 @@ TEST:=$(patsubst src/test/%,test/%,$(basename $(TEST_SRC)))
 LIBS:=$(patsubst src/lib/%,lib/lib%.a,$(shell find src/lib -mindepth 1 -maxdepth 1 -type d))
 
 F90_SRC=$(filter %.f90, $(ALL_SRC))
+C_SRC=$(filter %.c, $(ALL_SRC))
 
 all:$(BIN) $(TEST)
 	echo $(LIBS)
@@ -42,7 +47,6 @@ doc:doxyfile $(ALL_SRC)
 
 build/%.o:src/%.f90
 	@$(MKDIR) $(dir $@)
-	@$(MKDIR) include
 	$(FC) $(FCFLAGS) -c -o $@ $<
 build/%.o:src/%.c
 	@$(MKDIR) $(dir $@)
@@ -64,3 +68,4 @@ build/%.d:src/%.f90
 	@$(MKDIR) $(dir $@)
 	./module_dependencies $< > $@
 -include $(patsubst src/%.f90,build/%.d,$(F90_SRC))
+-include $(patsubst src/%.c,build/%.d,$(C_SRC))
