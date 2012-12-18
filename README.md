@@ -1,9 +1,27 @@
-=Basic Fortran project=
+# Basic Fortran project
 
 This is a basic makefile to set up fortran projects, which includes automatic
 module dependancy generation.
 
-Directory structure:
+## Usage
+
+To build all binaries and libraries
+
+    make
+
+To build and run all tests
+
+    make check
+
+To build documentation using doxygen
+
+   make doc
+
+To remove all build artefacts
+
+   make clean
+
+## Source directory structure:
 
 * src/bin: Each file will be compiled into a binary and put into `bin`.
 * src/test: Each file will be compiled into a binary and put into `test`. The
