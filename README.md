@@ -15,11 +15,11 @@ To build and run all tests
 
 To build documentation using doxygen
 
-   make doc
+    make doc
 
 To remove all build artefacts
 
-   make clean
+    make clean
 
 ## Source directory structure:
 
