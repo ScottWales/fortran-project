@@ -1,0 +1,11 @@
+#!/bin/bash
+
+for infile in "$@"; do
+
+# Provided modules
+sed -n 's|^\s*module\s\+\(\S\+\)|\1.mod:'${infile%%.*}'.o|p' $infile
+
+# Used modules
+sed -n 's|^\s*use\s\+\([A-Za-z0-9_]\+\).*|'${infile%%.*}'.o:\1.mod|p' $infile
+
+done
