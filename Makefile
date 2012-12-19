@@ -14,12 +14,14 @@
 
 all:
 .PHONY: all check clean doc
+.SUFFIXES:
 
 LD=$(FC)
 MKDIR=mkdir -p
 
 FFLAGS+=-warn all -warn errors
 FFLAGS+=-module include
+FFLAGS+=-g -traceback
 
 CFLAGS+=-Wall -Werror
 CFLAGS+=-MMD -MP
@@ -35,7 +37,7 @@ LIBS:=$(patsubst src/lib/%,lib/lib%.a,$(shell find src/lib -mindepth 1 -maxdepth
 F90_SRC=$(filter %.f90, $(ALL_SRC))
 C_SRC=$(filter %.c, $(ALL_SRC))
 
-all:$(BIN) $(TEST)
+all:$(BIN) $(TEST) $(LIBS)
 check:$(TEST)
 	failed=0;for test in $^; do ./$$test || failed=$$(($$failed+1)); done;\
 	    if [ $$failed -gt 0 ]; then echo "$$failed tests failed"; exit 1; fi
@@ -46,7 +48,7 @@ doc:doxyfile $(ALL_SRC)
 
 build/%.o:src/%.f90
 	@$(MKDIR) $(dir $@)
-	$(FC) $(FCFLAGS) -c -o $@ $<
+	$(FC) $(FFLAGS) -c -o $@ $<
 build/%.o:src/%.c
 	@$(MKDIR) $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
@@ -59,11 +61,12 @@ test/%:build/test/%.o $(LIBS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 libsrc=$(patsubst src/lib/%,build/lib/%.o,$(basename $(filter src/lib/$(1)/%,$(ALL_SRC))))
-lib/lib%.a:$(call libsrc,%)
+.SECONDEXPANSION:
+lib/lib%.a:$$(call libsrc,%)
 	@$(MKDIR) $(dir $@)
-	$(AR) cr  $@ $<
+	$(AR) cr  $@ $^
 
-build/%.d:src/%.f90
+build/%.d:src/%.f90 module_dependencies
 	@$(MKDIR) $(dir $@)
 	./module_dependencies $< > $@
 -include $(patsubst src/%.f90,build/%.d,$(F90_SRC))
