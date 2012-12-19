@@ -1,0 +1,7 @@
+*.swp
+.*
+/include/*.mod
+/build
+/lib
+/bin
+/test

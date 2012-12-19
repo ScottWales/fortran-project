@@ -7,6 +7,6 @@ for infile in "$@"; do
     sed -n 's|^\s*module\s\+\(\S\+\)|\1.mod:'$ofile'|p' $infile
     
     # Used modules
-    sed -n 's|^\s*use\s\+\([A-Za-z0-9_]\+\).*|'$ofile':\1.mod|p' $infile
+    sed -n 's|^\s*use\s\+\([A-Za-z0-9_]\+\).*|'$ofile':\1.mod|p' $infile | grep -iv ifcore
 
 done
